@@ -2,8 +2,11 @@ import styles from "./CountryList.module.css";
 import Spinner from "./Spinner";
 import Message from "./Message";
 import CoutryItem from "./CountryItem";
+import { useContext } from "react";
+import { CitiesContext } from "../App";
 
-function CountryList({ cities, isLoading }) {
+function CountryList() {
+    const { cities, isLoading } = useContext(CitiesContext);
     if (isLoading) return <Spinner />;
 
     if (!cities.length)
@@ -21,7 +24,7 @@ function CountryList({ cities, isLoading }) {
     return (
         <ul className={styles.countryList}>
             {countries.map((country) => (
-                <CoutryItem country={country} key={countries.country} />
+                <CoutryItem country={country} key={country.country} />
             ))}
         </ul>
     );

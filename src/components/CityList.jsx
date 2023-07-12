@@ -2,7 +2,10 @@ import styles from "./CityList.module.css";
 import Spinner from "./Spinner";
 import Message from "./Message";
 import CityItem from "./CityItem";
-function CityList({ cities, isLoading }) {
+import { CitiesContext } from "../App";
+import { useContext } from "react";
+function CityList() {
+    const { cities, isLoading } = useContext(CitiesContext);
     if (isLoading) return <Spinner />;
 
     if (!cities.length)
