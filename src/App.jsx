@@ -1,11 +1,28 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import {
+    Suspense,
     createContext,
+    lazy,
+    useCallback,
     useContext,
     useEffect,
     useReducer,
     useState,
 } from "react";
+
+import CityList from "./components/CityList";
+import CountryList from "./components/CountryList";
+import City from "./components/City";
+import Form from "./components/Form";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import SpinnerFullPage from "./components/SpinnerFullPage";
+
+// const HomePage = lazy(() => import("./pages/Homepage"));
+// const Pricing = lazy(() => import("./pages/Pricing"));
+// const Product = lazy(() => import("./pages/Product"));
+// const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+// const Login = lazy(() => import("./pages/Login"));
+// const AppLayout = lazy(() => import("./pages/Homepage"));
 
 import HomePage from "./pages/HomePage";
 import Pricing from "./pages/Pricing";
@@ -13,11 +30,6 @@ import Product from "./pages/Product";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
 import AppLayout from "./pages/AppLayout";
-import CityList from "./components/CityList";
-import CountryList from "./components/CountryList";
-import City from "./components/City";
-import Form from "./components/Form";
-import ProtectedRoute from "./pages/ProtectedRoute";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -73,20 +85,23 @@ function App() {
         fetchCities();
     }, []);
 
-    async function getCity(id) {
-        if (Number(id) === currentCity.id) return;
+    const getCity = useCallback(
+        async function getCity(id) {
+            if (Number(id) === currentCity.id) return;
 
-        try {
-            setIsLoading(true);
-            const res = await fetch(`${BASE_URL}/cities/${id}`);
-            const data = await res.json();
-            setCurrentCity(data);
-        } catch {
-            alert("There was an error loading data...");
-        } finally {
-            setIsLoading(false);
-        }
-    }
+            try {
+                setIsLoading(true);
+                const res = await fetch(`${BASE_URL}/cities/${id}`);
+                const data = await res.json();
+                setCurrentCity(data);
+            } catch {
+                alert("There was an error loading data...");
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [currentCity.id]
+    );
 
     async function createCity(newCity) {
         try {
@@ -146,9 +161,10 @@ function App() {
                 }}
             >
                 <BrowserRouter>
+                    {/* <Suspense fallback={<SpinnerFullPage />}> */}
                     <Routes>
-                        {/* <Route index element={<HomePage />} /> */}
-                        <Route path="/" element={<HomePage />} />
+                        <Route index element={<HomePage />} />
+                        {/* <Route path="/" element={<HomePage />} /> */}
                         <Route path="product" element={<Product />} />
                         <Route path="pricing" element={<Pricing />} />
                         <Route path="login" element={<Login />} />
@@ -172,6 +188,7 @@ function App() {
 
                         <Route path="*" element={<PageNotFound />} />
                     </Routes>
+                    {/* </Suspense> */}
                 </BrowserRouter>
             </CitiesContext.Provider>
         </AuthContext.Provider>
